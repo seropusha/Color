@@ -1,0 +1,113 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+platform :ios do
+  before_all do |lane, options|
+      begin
+        delete_temp_keychain
+      rescue
+      end
+      create_temp_keychain
+      import_app_certificates
+      import_app_provision_profiles
+  end
+  
+  after_all do |lane, options|
+      delete_temp_keychain
+  end
+
+  error do |lane, exception, options|
+      delete_temp_keychain
+  end
+  
+  desc "Creates keychain"
+  private_lane :create_temp_keychain do
+      create_keychain(
+        name: keychain_name(),
+        default_keychain: false,
+        unlock: true,
+        timeout: 3600,
+        lock_when_sleeps: true,
+        password: ""
+      )
+  end
+  
+  desc "Imports certificates to created keychain"
+  private_lane :import_app_certificates do
+      import_certificate(
+        certificate_path: ENV["CERTIFICATE_PATH"],
+        keychain_name: keychain_name(),
+        keychain_password: ""
+      )
+  end
+  
+  desc "Imports provisioning profiles"
+  private_lane :import_app_provision_profiles do
+      sh "cp ./credentials/*.mobileprovision ~/Library/MobileDevice/'Provisioning Profiles'/"
+  end
+  
+  desc "Delete created keychain"
+  private_lane :delete_temp_keychain do
+      puts keychain_name()
+      delete_keychain(name: keychain_name())
+  end
+  
+  lane :fabric do |options|
+      increment_build_number(
+          build_number: next_version(options),
+          xcodeproj: "./#{ENV["PROJECT_NAME"]}.xcodeproj"
+      )
+      gym(
+        scheme: ENV["SCHEME"],
+        configuration: "Release",
+        export_method: "ad-hoc",
+        xcargs:"OTHER_SWIFT_FLAGS='-D" + ENV["ENVIRONMENT"] + "'",
+        export_options: {
+         compileBitcode: false
+        }
+      )
+      crashlytics(
+        api_token: ENV["FABRIC_API_TOKEN"],
+        build_secret: ENV["FABRIC_BUILD_SECRET"],
+        notes: ENV["ENVIRONMENT"],
+        groups: [ENV["CRASHLYTICS_GROUPS"]]
+      )               
+      upload_symbols_to_crashlytics
+  end
+
+  def keychain_name()
+      "Keychain_#{ENV["PROJECT_NAME"]}"
+  end
+
+  def next_version(options)
+      def to_i?(str)
+          Integer(str)
+      rescue
+          false
+      end
+      # Version from file
+      def version?(filename)
+        if File.exists?(filename)
+            to_i?(File.open(filename, 'r') { |file| file.read })
+        else
+            false
+        end
+      end
+      filename = "../.build-version"
+      new_version = to_i?(options[:build]) || (version?(filename) || 0).next
+      # Write
+      File.open(filename, 'w') {|file| file.write(new_version) }
+      return new_version
+  end
+  
+end

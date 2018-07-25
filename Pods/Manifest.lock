@@ -1,0 +1,50 @@
+PODS:
+  - Alamofire (4.7.3)
+  - KeychainAccess (3.1.1)
+  - Moya (11.0.2):
+    - Moya/Core (= 11.0.2)
+  - Moya/Core (11.0.2):
+    - Alamofire (~> 4.1)
+    - Result (~> 3.0)
+  - Moya/ReactiveSwift (11.0.2):
+    - Moya/Core
+    - ReactiveSwift (~> 3.0)
+  - ReactiveSwift (3.1.0):
+    - Result (~> 3.2)
+  - Reqres (2.1.1)
+  - Result (3.2.4)
+  - SwiftLint (0.26.0)
+  - SwiftyUserDefaults (3.0.1)
+
+DEPENDENCIES:
+  - KeychainAccess (~> 3.1.0)
+  - Moya (~> 11.0.0)
+  - Moya/ReactiveSwift
+  - Reqres (~> 2.1.1)
+  - SwiftLint
+  - SwiftyUserDefaults (~> 3.0.1)
+
+SPEC REPOS:
+  https://github.com/CocoaPods/Specs.git:
+    - Alamofire
+    - KeychainAccess
+    - Moya
+    - ReactiveSwift
+    - Reqres
+    - Result
+    - SwiftLint
+    - SwiftyUserDefaults
+
+SPEC CHECKSUMS:
+  Alamofire: c7287b6e5d7da964a70935e5db17046b7fde6568
+  KeychainAccess: 7bd430028059754a3debab3cfc0bd1fc7fb85df3
+  Moya: a725035953bc1c0eb1be505ab903984501d82440
+  ReactiveSwift: 5b26d2e988fe0eed2daf48c4054d1de74db50184
+  Reqres: d532d6fddbede6d688552a7f2535fb0102fc4aca
+  Result: d2d07204ce72856f1fd9130bbe42c35a7b0fea10
+  SwiftLint: f6b83e8d95ee1e91e11932d843af4fdcbf3fc764
+  SwiftyUserDefaults: 3d273b1739b68ada3145dc754a70ec775bc5c8be
+
+PODFILE CHECKSUM: e341a519d035367b1eab361037676e46f5883259
+
+COCOAPODS: 1.5.0
